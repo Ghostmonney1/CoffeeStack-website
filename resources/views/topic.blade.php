@@ -6,60 +6,60 @@
 
         <p class="text-gray-700 mb-8">Here you can ask questions and share knowledge about {{ ucfirst(str_replace('-', ' ', $slug)) }}.</p>
 
+        <!-- Ask Question Toggle Button -->
+        <button class="bg-amber-700 text-white px-6 py-3 rounded hover:bg-amber-800 transition"
+                id="toggleForm">
+            Ask a Question
+        </button>
+
+        <!-- Hidden Form -->
+        <form id="questionForm" action="{{ route('posts.store') }}" method="POST" class="hidden mt-8">
             @csrf
 
-            <!-- Text Invoer -->
-            <div>
+            <input type="hidden" name="topic" value="{{ $slug }}">
+
+            <div class="mb-4">
                 <x-input-label for="question" value="Question" class="text-gray-700" />
                 <textarea
                     id="question"
-                    type="text"
-                    name="question"
-                    value="old('question')"
-                    required autofocus
-                    class="block h-20 p-4 w-full mt-1 border-gray-300 rounded-md focus:ring-amber-600 focus:border-amber-600"
+                    name="content"
+                    required
+                    class="block h-28 p-4 w-full mt-1 border-gray-300 rounded-md focus:ring-amber-600 focus:border-amber-600"
                 ></textarea>
-
             </div>
 
+            <button type="submit" class="bg-amber-700 text-white px-6 py-3 rounded hover:bg-amber-800 transition">
+                Send Question
+            </button>
+        </form>
 
-
-
-            <!-- Divider -->
-            <div class="flex items-center my-4">
-                <hr class="flex-grow border-gray-300">
-{
-            </div>
-
-
-        <form>
-        <a href="#" class="inline-block bg-amber-700 text-white px-6 py-3 rounded hover:bg-amber-800 transition mt-4" id="toggleForm">Ask a Question</a>
-
-        <div class="mt-10">
-            <p class="text-gray-500">No questions yet. Be the first to ask!</p>
+        <!-- List of questions -->
+        <div class="mt-12">
+            @forelse ($posts as $post)
+                <div class="border rounded p-4 shadow mb-4">
+                    <h2 class="text-xl font-semibold">{{ $post->title ?? 'Untitled Question' }}</h2>
+                    <p class="text-gray-700">{{ $post->content }}</p>
+                    <p class="text-sm text-gray-500 mt-2">
+                        {{ $post->created_at->format('d-m-Y H:i') }}
+                    </p>
+                </div>
+            @empty
+                <p class="text-gray-500">No questions yet. Be the first to ask!</p>
+            @endforelse
         </div>
-    </form>
     </div>
 
     @include('layouts/footer')
 
-    <script type="text/javascript">
+    <script>
         let toggleButton = document.querySelector('#toggleForm');
         let questionForm = document.querySelector('#questionForm');
 
-        toggleButton.addEventListener('click', (event) => {
-            event.preventDefault();
-
-            if(!questionForm.classList.contains('hidden')) {
-                questionForm.submit();
-            }
-
+        toggleButton.addEventListener('click', () => {
             questionForm.classList.toggle('hidden');
-            if(questionForm.classList.contains('hidden')) {
-                toggleButton.innerHTML = 'Ask a Question';
-            } else {
-                toggleButton.innerHTML = 'Send question';
-            }
+            toggleButton.innerHTML = questionForm.classList.contains('hidden')
+                ? 'Ask a Question'
+                : 'Cancel';
         });
     </script>
 </div>
